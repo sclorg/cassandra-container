@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# Test the Cassandra image.
+#
+# IMAGE_NAME specifies the name of the candidate image used for testing.
+# The image has to be available before this script is executed.
+#
+
+set -exo nounset
+shopt -s nullglob
+
+TEST_LIST="\
+run_container_creation_tests
+run_general_tests
+"
+
+if [ -e "${IMAGE_NAME:-}" ] ; then
+  echo "Error: IMAGE_NAME must be specified"
+  exit 1
+fi
+
+CIDFILE_DIR=$(mktemp --suffix=cassandra_test_cidfiles -d)

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -o pipefail
+
+source ${CONTAINER_SCRIPTS_PATH}/common.sh
+
+save_env_config_vars
+
+if [ "$CASSANDRA_ADMIN_PASSWORD" ]; then
+  create_admin_user
+  turn_authorization_on
+# so far this is not working because cassandra-env.sh file is not modifiable (sits in scripts directory)
+#  turn_on_jmx_authentication
+# the admin password is not mandatory yet, just uncomment in case of change
+#else
+#  usage "CASSANDRA_ADMIN_PASSWORD has to be set"
+fi
+
+exec cassandra -f
