@@ -2,7 +2,7 @@ Apache Cassandra Database Server Docker Image
 =============================================
 
 This repository contains Dockerfiles for Apache Cassandra images for OpenShift and general usage.
-Users can choose between RHEL and CentOS based images.
+Currently only CentOS based image is available. RHEL based image will be available soon.
 
 For more information about using these images with OpenShift, please see the
 official [OpenShift Documentation](https://docs.openshift.org/latest/using_images/db_images/cassandra.html).
@@ -18,34 +18,12 @@ Versions
 Apache Cassandra currently provided are:
 * [Cassandra 3.11](3.11)
 
-RHEL versions currently supported are:
-* RHEL7
-
 CentOS versions currently supported are:
 * CentOS7
 
 
 Installation
 ----------------------
-Choose either the CentOS7 or RHEL7 based image:
-
-*  **RHEL7 based image**
-
-    This image is available in Red Hat Container Registry. To download it run:
-
-    ```
-    $ docker pull registry.access.redhat.com/rhscl/cassandra-311-rhel7
-    ```
-
-    To build a RHEL7 based Cassandra image, you need to run Docker build on a properly
-    subscribed RHEL machine.
-
-    ```
-    $ git clone --recursive https://github.com/sclorg/cassandra-container.git
-    $ cd cassandra-container
-    $ git submodule update --init
-    $ make build TARGET=rhel7 VERSIONS=3.11
-    ```
 
 *  **CentOS7 based image**
 
@@ -81,19 +59,6 @@ Test
 
 This repository also provides a test framework, which checks basic functionality
 of the Cassandra image.
-
-Users can choose between testing Cassandra based on a RHEL or CentOS image.
-
-*  **RHEL based image**
-
-    To test a RHEL7 based Cassandra image, you need to run the test on a properly
-    subscribed RHEL machine.
-
-    ```
-    $ cd cassandra-container
-    $ git submodule update --init
-    $ make test TARGET=rhel7 VERSIONS=3.11
-    ```
 
 *  **CentOS based image**
 
