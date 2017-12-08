@@ -66,26 +66,26 @@ matches the user UID or name which is running inside the container.**
 Usage
 -----
 
-For this, we will assume that you are using the `fedora/cassandra-39` image.
+For this, we will assume that you are using the `fedora/cassandra-311` image.
 If you want to set only the mandatory environment variables and store the database
 in the `/home/user/database` directory on the host filesystem, execute the following command:
 
 ```
-$ docker run -d -v /home/user/database:/var/lib/cassandra/data fedora/cassandra-39
+$ docker run -d -v /home/user/database:/var/lib/cassandra/data fedora/cassandra-311
 ```
 
 Ports
 -----
 
 By default, Cassandra uses 7000 for cluster communication (7001 if SSL is enabled), 9042 for native protocol clients, and 7199 for JMX. The internode communication and native protocol ports are configurable in the Cassandra Configuration File (cassandra.yaml). The JMX port is configurable in cassandra-env.sh (through JVM options). All ports are TCP.
- 
+
 
 Documentation
 -------------
 
 See http://cassandra.apache.org/doc/latest/
 
- 
+
 Requirements
 ------------
 
@@ -118,4 +118,4 @@ docker logs <container>
 See also
 --------
 
-The Dockerfile is using a cassandra rpm package from Fedora. More information is found at: https://admin.fedoraproject.org/pkgdb/package/rpms/cassandra/ 
+The Dockerfile is using a cassandra rpm package from Fedora. More information is found at: https://admin.fedoraproject.org/pkgdb/package/rpms/cassandra/

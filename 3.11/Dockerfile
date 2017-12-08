@@ -6,12 +6,7 @@ FROM centos:centos7
 #  * /var/lib/cassandra/data - Datastore for Cassandra
 # Environment:
 
-LABEL MAINTAINER "Augusto Caringi" <acaringi@redhat.com>
-
-ENV NAME=cassandra \
-    VERSION=0 \
-    RELEASE=2 \
-    ARCH=x86_64 \
+ENV CASSANDRA_VERSION=3.11 \
     SUMMARY="Cassandra is an OpenSource database for high-scale application" \
     DESCRIPTION="Cassandra is a partitioned row store. Rows are organized \
 into tables with a required primary key. Partitioning means that Cassandra can \
@@ -23,18 +18,15 @@ Language (CQL) is a close relative of SQL."
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
-      com.redhat.component="$NAME" \
-      name="$FGC/$NAME" \
-      version=0 \
-      release="$RELEASE.$DISTTAG" \
-      architecture="$ARCH" \
-      usage="docker run cassandra" \
-      help="help.1"
-
-LABEL io.k8s.description="$SUMMARY" \
-      io.k8s.display-name="Cassandra 3.11" \
+      io.k8s.description="$SUMMARY" \
+      io.k8s.display-name="Cassandra $CASSANDRA_VERSION" \
       io.openshift.expose-services="7199:cassandra" \
-      io.openshift.tags="database,cassandra,cassandra39"
+      io.openshift.tags="database,cassandra,cassandra311" \
+      name="centos/cassandra-311-centos7" \
+      version="$CASSANDRA_VERSION" \
+      release="1" \
+      com.redhat.component="rh-cassandra311-docker" \
+      maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 ENV CASSANDRA_VERSION=3.11 \
     # Set paths to avoid hard-coding them in scripts.
