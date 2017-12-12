@@ -1,0 +1,53 @@
+#
+# Library of shared functions for Cassandra image tests.
+#
+# Always use sourced from a specific container testfile
+
+test -n "${IMAGE_NAME-}" || false 'make sure $IMAGE_NAME is defined'
+test -n "${VERSION-}" || false 'make sure $VERSION is defined'
+
+# get_version_number [version_string]
+# --------------------
+# Extracts the version number from provided version string.
+# e.g. 3.0upg => 3.0
+function get_version_number() {
+    echo $1 | sed -e 's/^\([0-9.]*\).*/\1/'
+}
+
+function cassandra_cmd() {
+    docker run --rm $IMAGE_NAME cqlsh $CONTAINER_IP -u "$USER" -p "$PASS" -e "${@}"
+}
+
+function test_connection() {
+    local name=$1 ; shift
+    CONTAINER_IP=$(ct_get_cip $name)
+    echo "  Testing Cassandra connection to $CONTAINER_IP..."
+    local max_attempts=20
+    local sleep_time=2
+    for i in $(seq $max_attempts); do
+        echo "    Trying to connect..."
+        set +e
+        cassandra_cmd "show version"
+        status=$?
+        set -e
+        if [ $status -eq 0 ]; then
+            echo "  Success!"
+            return 0
+        fi
+        sleep $sleep_time
+    done
+    echo "  Giving up: Failed to connect. Logs:"
+    docker logs $(ct_get_cid $name)
+    return 1
+}
+
+function test_general() {
+    local name=$1 ; shift
+    CONTAINER_ARGS="-e CASSANDRA_ADMIN_PASSWORD=$PASS"
+    ct_create_container $name
+    CONTAINER_IP=$(ct_get_cip $name)
+    test_connection $name
+    echo "  Testing scl usage"
+    ct_scl_usage_old $name 'cassandra -v' $(get_version_number $VERSION)
+    test_cassandra $name
+}

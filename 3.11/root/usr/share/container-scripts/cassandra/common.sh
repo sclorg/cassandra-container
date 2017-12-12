@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -o pipefail
+set -ex
 
 #CASSANDRA_CONF_DIR="/etc/cassandra/"
 CASSANDRA_CONF_FILE="cassandra.yaml"
@@ -26,7 +27,7 @@ within the container or visit https://github.com/sclorg/cassandra-container/."
   exit 1
 }
 
-# update cassandra config file (cassandra.yaml) based on the environment varibales
+# update cassandra config file (cassandra.yaml) based on the environment variables
 # set by the user
 function save_env_config_vars() {
   # check whether the user mounted in his own config file
@@ -112,7 +113,9 @@ function create_admin_user() {
 #  echo cassandra super user dropped
 
   # shut the cassandra down
-  nodetool stopdaemon 2>/dev/null
+  #nodetool stopdaemon #2>/dev/null
+  pkill -f 'java.*cassandra'
+  sleep 3
 #  echo server stopped
 
   # optionaly create a cqlshrc file with the login information

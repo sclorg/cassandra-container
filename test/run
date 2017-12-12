@@ -9,9 +9,12 @@
 set -exo nounset
 shopt -s nullglob
 
+. test/test-lib.sh
+. test/lib
+
 TEST_LIST="\
-run_container_creation_tests
-run_general_tests
+ctest_container_creation
+ctest_general
 "
 
 if [ -e "${IMAGE_NAME:-}" ] ; then
@@ -19,4 +22,26 @@ if [ -e "${IMAGE_NAME:-}" ] ; then
   exit 1
 fi
 
-CIDFILE_DIR=$(mktemp --suffix=cassandra_test_cidfiles -d)
+
+CID_FILE_DIR=$(mktemp --suffix=cassandra_test_cidfiles -d)
+
+TEST_DIR="$(readlink -f $(dirname "${BASH_SOURCE[0]}"))"
+
+function cleanup() {
+  ct_cleanup
+}
+trap cleanup EXIT SIGINT
+
+function test_cassandra() {
+    echo "  Testing Cassandra"
+    cassandra_cmd "CREATE KEYSPACE IF NOT EXISTS k1 WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;"
+    cassandra_cmd "USE K1; CREATE TABLE IF NOT EXISTS person (id text, name text, surname text, email text, PRIMARY KEY (id));"
+    cassandra_cmd "USE K1; INSERT INTO person (id, name, surname, email) VALUES ('003', 'Harry', 'Potter', 'harry@example.com');"
+    cassandra_cmd "USE K1; SELECT email FROM person WHERE id='003';"
+    cassandra_cmd "USE K1; DELETE FROM person WHERE id='003';"
+    cassandra_cmd "USE K1; DROP TABLE person"
+    echo "  Success!"
+}
+
+# Run the chosen tests
+TEST_LIST=${@:-$TEST_LIST} ct_run_test_list

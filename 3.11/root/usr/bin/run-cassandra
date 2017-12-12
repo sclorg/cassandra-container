@@ -11,9 +11,9 @@ if [ "$CASSANDRA_ADMIN_PASSWORD" ]; then
   turn_authorization_on
 # so far this is not working because cassandra-env.sh file is not modifiable (sits in scripts directory)
 #  turn_on_jmx_authentication
-# the admin password is not mandatory yet, just uncomment in case of change
-#else
-#  usage "CASSANDRA_ADMIN_PASSWORD has to be set"
+# makes the admin password mandatory
+else
+  usage "CASSANDRA_ADMIN_PASSWORD has to be set"
 fi
 
 exec cassandra -f

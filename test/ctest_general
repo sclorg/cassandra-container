@@ -1,0 +1,10 @@
+#
+# General test for Cassandra image.
+#
+# Always use sourced from a specific container testfile
+
+function ctest_general() {
+    USER="admin" PASS="r00t" test_general admin
+    # Test with random uid in container
+    CONTAINER_ARGS="-u 12345" USER="admin" PASS="r00t" test_general admin_altuid
+}

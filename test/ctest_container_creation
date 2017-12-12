@@ -1,0 +1,14 @@
+#
+# Container creation test for Cassandra image.
+#
+# Always use sourced from a specific container testfile
+
+function ctest_container_creation() {
+  #echo "  Testing wrong user variables usage"
+  #ct_assert_container_creation_fails -e CASSANDRA_CLUSTER_NAME=Test
+  #echo "  Success!"
+
+  echo "  Testing good user variables usage"
+  ct_assert_container_creation_fails -e CASSANDRA_ADMIN_PASSWORD=r00t || [ $? -eq 1 ]
+  echo "  Success!"
+}
