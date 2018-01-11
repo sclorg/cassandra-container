@@ -1,0 +1,8 @@
+#
+# Container configuration test for Cassandra image.
+#
+# Always use sourced from a specific container testfile
+
+function ctest_configuration() {
+  echo "  Success!"
+}

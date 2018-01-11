@@ -14,7 +14,10 @@ shopt -s nullglob
 
 TEST_LIST="\
 ctest_container_creation
+ctest_configuration
 ctest_general
+ctest_multi_node
+ctest_doc_content
 "
 
 if [ -e "${IMAGE_NAME:-}" ] ; then

@@ -22,7 +22,7 @@ function test_connection() {
     local name=$1 ; shift
     CONTAINER_IP=$(ct_get_cip $name)
     echo "  Testing Cassandra connection to $CONTAINER_IP..."
-    local max_attempts=20
+    local max_attempts=30
     local sleep_time=2
     for i in $(seq $max_attempts); do
         echo "    Trying to connect..."
@@ -50,4 +50,6 @@ function test_general() {
     echo "  Testing scl usage"
     ct_scl_usage_old $name 'cassandra -v' $(get_version_number $VERSION)
     test_cassandra $name
+    cid=$(ct_get_cid $name)
+    docker stop $cid
 }

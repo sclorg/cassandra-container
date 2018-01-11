@@ -1,0 +1,36 @@
+#
+# Container multi node test for Cassandra image.
+#
+# Always use sourced from a specific container testfile
+
+function ctest_multi_node() {
+  # Run the Cassandra node 1
+  USER="admin"
+  PASS="r00t"
+
+  # Create first node
+  #CONTAINER_ARGS="-e CASSANDRA_ADMIN_PASSWORD=$PASS -e CASSANDRA_AUTO_BOOTSTRAP=false -e CASSANDRA_SEEDS=127.0.0.1,172.17.0.3"
+  CONTAINER_ARGS="-e CASSANDRA_ADMIN_PASSWORD=$PASS -e CASSANDRA_AUTO_BOOTSTRAP=false"
+  ct_create_container node1.cid
+  local node1_ip
+  node1_ip=$(ct_get_cip node1.cid)
+  sleep 20
+  test_connection node1.cid
+
+  # Create second node
+  CONTAINER_ARGS="-e CASSANDRA_ADMIN_PASSWORD=$PASS -e CASSANDRA_AUTO_BOOTSTRAP=false -e CASSANDRA_SEEDS=127.0.0.1,$node1_ip"
+  ct_create_container node2.cid
+  local node2_ip
+  node2_ip=$(ct_get_cip node2.cid)
+  sleep 20
+  test_connection node2.cid
+
+  # Give some time to Cassandra nodes start
+  sleep 10
+
+  # Test nodetool
+  docker exec $(ct_get_cid "node1.cid") bash -c 'nodetool status'
+  docker exec $(ct_get_cid "node2.cid") bash -c 'nodetool status'
+
+  echo " Success!"
+}
