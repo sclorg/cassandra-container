@@ -45,10 +45,13 @@ function save_env_config_vars() {
     fi
 
     # alter the seeds in the config file
-    #sed -ri 's/(- seeds:).*/\1 "'"$CASSANDRA_SEEDS"'"/' "$CASSANDRA_CONF_DIR$CASSANDRA_CONF_FILE"
+    sed -ri 's/(- seeds:).*/\1 "'"$HOSTNAME,$CASSANDRA_SEEDS"'"/' "$CASSANDRA_CONF_DIR$CASSANDRA_CONF_FILE"
 
     # alter the rpc_address to allow external CQL client connections
     sed -ri 's/(rpc_address:).*/\1 '"$HOSTNAME"'/' "$CASSANDRA_CONF_DIR$CASSANDRA_CONF_FILE"
+
+    # alter the listen_address to allow internode communication
+    sed -ri 's/(listen_address:).*/\1 '"$HOSTNAME"'/' "$CASSANDRA_CONF_DIR$CASSANDRA_CONF_FILE"
 
     for yaml in \
       cluster_name \

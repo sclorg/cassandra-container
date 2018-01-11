@@ -3,7 +3,7 @@ FROM centos:centos7
 # Cassandra image for CentOS.
 #
 # Volumes:
-#  * /var/lib/cassandra/data - Datastore for Cassandra
+#  * /var/opt/rh/sclo-cassandra3/lib/cassandra - Datastore for Cassandra
 # Environment:
 
 ENV CASSANDRA_VERSION=3.11 \
@@ -55,7 +55,7 @@ RUN INSTALL_PKGS="sclo-cassandra3 sclo-cassandra3-cassandra jemalloc" && \
     rpm -V $INSTALL_PKGS && \
     yum clean all
 
-VOLUME ["/var/lib/cassandra"]
+VOLUME ["/var/opt/rh/sclo-cassandra3/lib/cassandra"]
 
 USER 143
 
