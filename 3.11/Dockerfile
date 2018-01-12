@@ -49,9 +49,7 @@ ADD root /
 RUN INSTALL_PKGS="sclo-cassandra3 sclo-cassandra3-cassandra jemalloc" && \
     yum install -y centos-release-scl && \
     yum install -y epel-release && \
-    yum-config-manager --add-repo https://cbs.centos.org/repos/sclo7-sclo-cassandra3-sclo-candidate/x86_64/os/ && \
-    echo gpgcheck=0 >> /etc/yum.repos.d/cbs.centos.org_repos_sclo7-sclo-cassandra3-sclo-candidate_x86_64_os_.repo && \
-    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
+    yum install --enablerepo=centos-sclo-sclo-testing -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all
 
