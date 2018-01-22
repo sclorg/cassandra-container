@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# Test the Cassandra image in OpenShift.
+#
+# IMAGE_NAME specifies a name of the candidate image used for testing.
+# The image has to be available before this script is executed.
+#
+
+THISDIR=$(dirname ${BASH_SOURCE[0]})
+
+source ${THISDIR}/test-lib-openshift.sh
+
+set -exo nounset
+
+function check_cassandra_os_service_connection() {
+  local util_image_name="${1}" ; shift
+  local service_name="${1}" ; shift
+  local user="${1}" ; shift
+  local pass="${1}" ; shift
+  local timeout="${1:-120}" ; shift || :
+  local pod_ip=$(ct_os_get_service_ip ${service_name})
+
+  : "  Service ${service_name} check ..."
+
+  local cmd="echo 'SELECT cluster_name FROM system.local; exit' | cqlsh --connect-timeout=15 ${pod_ip} -u${user} -p${pass}"
+  local expected_value='Test Cluster'
+  local output
+  local ret
+  SECONDS=0
+
+  echo -n "Waiting for ${service_name} service becoming ready ..."
+  while true ; do
+    output=$(docker run -ti --rm ${util_image_name} bash -c "${cmd}" || :)
+    echo "${output}" | grep -qe "${expected_value}" && ret=0 || ret=1
+    if [ ${ret} -eq 0 ] ; then
+      echo " PASS"
+      return 0
+    fi
+    echo -n "."
+    [ ${SECONDS} -gt ${timeout} ] && break
+    sleep 3
+  done
+  echo " FAIL"
+  return 1
+}
+
+function test_cassandra_pure_image() {
+  local image_name=${1:-centos/cassandra-311-centos7}
+  local image_name_no_namespace=${image_name##*/}
+  local service_name=${image_name_no_namespace}
+
+  ct_os_new_project "test-1234"
+  ct_os_upload_image "${image_name}"
+
+  ct_os_deploy_pure_image "test-1234/${image_name_no_namespace}" \
+                          --name "${service_name}" \
+                          --env CASSANDRA_ADMIN_PASSWORD=r00t
+
+  ct_os_wait_pod_ready "${service_name}" 60
+  check_cassandra_os_service_connection "${image_name}" "${service_name}" admin r00t
+
+  ct_os_delete_project
+}
+
+ct_os_install_in_centos
+ct_os_cluster_up
+test_cassandra_pure_image ${IMAGE_NAME}
