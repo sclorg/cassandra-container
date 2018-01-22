@@ -8,7 +8,7 @@ save_env_config_vars
 
 # If the container is using a not empty provided volume, don't try to set
 # a new CASSANDRA_ADMIN_PASSWORD
-if test "$(ls -A "$HOME")"; then
+if test "$(ls -A "$HOME/cassandra")"; then
     echo "Using a populated data directory, CASSANDRA_ADMIN_PASSWORD already set"
 else
     if [ "$CASSANDRA_ADMIN_PASSWORD" ]; then
@@ -22,4 +22,4 @@ else
     fi
 fi
 
-exec cassandra -f
+exec cassandra -f -R

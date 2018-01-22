@@ -20,7 +20,7 @@ LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
       io.k8s.description="$SUMMARY" \
       io.k8s.display-name="Cassandra $CASSANDRA_VERSION" \
-      io.openshift.expose-services="7199:cassandra" \
+      io.openshift.expose-services="7199:cassandra,9042:cql" \
       io.openshift.tags="database,cassandra,cassandra311" \
       name="centos/cassandra-311-centos7" \
       version="$CASSANDRA_VERSION" \
@@ -51,7 +51,11 @@ RUN INSTALL_PKGS="sclo-cassandra3 sclo-cassandra3-cassandra jemalloc" && \
     yum install -y epel-release && \
     yum install --enablerepo=centos-sclo-sclo-testing -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
-    yum clean all
+    yum clean all && \
+    chgrp -R 0 /etc/opt/rh/sclo-cassandra3/ && \
+    chmod -R g=u /etc/opt/rh/sclo-cassandra3/ && \
+    chgrp -R 0 /var/opt/rh/sclo-cassandra3/ && \
+    chmod -R g=u /var/opt/rh/sclo-cassandra3/
 
 VOLUME ["/var/opt/rh/sclo-cassandra3/lib/cassandra"]
 

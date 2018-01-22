@@ -100,7 +100,7 @@ function create_admin_user() {
 #  echo config changed
 
   # start cassandra with authentication
-  cassandra >/dev/null &
+  cassandra -R >/dev/null &
 #  echo starting server
 
   # add admin super user with CASSANDRA_ADMIN_PASSWORD via the default super user
