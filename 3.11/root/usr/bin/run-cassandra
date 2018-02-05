@@ -2,14 +2,20 @@
 
 set -o pipefail
 
+echo "Initializing..."
+
 source ${CONTAINER_SCRIPTS_PATH}/common.sh
 
 save_env_config_vars
 
-# If the container is using a not empty provided volume, don't try to set
-# a new CASSANDRA_ADMIN_PASSWORD
-if test "$(ls -A "$HOME/cassandra")"; then
+if is_authorization_on; then
+    echo "Authorization already enabled for this container, not setting new admin password..."
+elif test "$(ls -A "$HOME/cassandra" 2> /dev/null)"; then
+    # If the container is using a not empty provided volume *and* authorization if turned off,
+    # don't try to set a new CASSANDRA_ADMIN_PASSWORD, just enable authorization
     echo "Using a populated data directory, CASSANDRA_ADMIN_PASSWORD already set"
+    turn_authorization_on
+    set_password_authenticator
 else
     if [ "$CASSANDRA_ADMIN_PASSWORD" ]; then
         create_admin_user

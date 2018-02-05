@@ -147,6 +147,20 @@ function turn_authorization_on() {
 #  echo config changed
 }
 
+# set authenticator to PasswordAuthenticator
+function set_password_authenticator {
+  sed -ri 's/(^authenticator:).*/\1 PasswordAuthenticator/' "$CASSANDRA_CONF_DIR$CASSANDRA_CONF_FILE"
+}
+
+# check if authorization is on
+function is_authorization_on() {
+  result=`grep  authorizer: $CASSANDRA_CONF_DIR$CASSANDRA_CONF_FILE|cut -d' ' -f2`
+  if [ "$result" == "CassandraAuthorizer" ]; then
+    return 0
+  fi
+  return 1
+}
+
 # turn on the JMX authentication using Cassandra's internal authentication and authorization
 function turn_on_jmx_authentication() {
   # disable JMX local
