@@ -12,11 +12,11 @@ shopt -s nullglob
 . test/test-lib.sh
 . test/lib
 
+# Disabled test: ctest_multi_node
 TEST_LIST="\
 ctest_container_creation
 ctest_configuration
 ctest_general
-ctest_multi_node
 ctest_doc_content
 "
 
