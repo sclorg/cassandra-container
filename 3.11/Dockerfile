@@ -21,11 +21,11 @@ LABEL summary="$SUMMARY" \
       io.k8s.description="$SUMMARY" \
       io.k8s.display-name="Cassandra $CASSANDRA_VERSION" \
       io.openshift.expose-services="7199:cassandra,9042:cql" \
-      io.openshift.tags="database,cassandra,cassandra311" \
-      name="centos/cassandra-311-centos7" \
+      io.openshift.tags="database,cassandra,cassandra3" \
+      name="centos/cassandra-3-centos7" \
       version="$CASSANDRA_VERSION" \
       release="1" \
-      com.redhat.component="rh-cassandra311-docker" \
+      com.redhat.component="rh-cassandra3-docker" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 ENV CASSANDRA_VERSION=3.11 \
