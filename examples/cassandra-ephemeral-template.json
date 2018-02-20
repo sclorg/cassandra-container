@@ -1,0 +1,216 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "cassandra-ephemeral",
+    "annotations": {
+      "openshift.io/display-name": "Cassandra (Ephemeral)",
+      "description": "Cassandra database service, without persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/cassandra-container/blob/master/3.11/root/usr/share/container-scripts/cassandra/README.md.\n\nWARNING: Any data stored will be lost upon pod destruction. Only use this template for testing",
+      "iconClass": "icon-cassandra",
+      "tags": "database,cassandra",
+      "openshift.io/long-description": "This template provides a standalone Cassandra server with a database created.  The database is not stored on persistent storage, so any restart of the service will result in all data being lost.  The database admin password are chosen via parameters when provisioning this service.",
+      "openshift.io/provider-display-name": "Red Hat, Inc.",
+      "openshift.io/documentation-url": "https://github.com/sclorg/cassandra-container/blob/master/3.11/root/usr/share/container-scripts/cassandra/README.md",
+      "openshift.io/support-url": "https://access.redhat.com"
+    }
+  },
+  "message": "The following service(s) have been created in your project: ${DATABASE_SERVICE_NAME}.\n\n       Database Name: ${CASSANDRA_DATABASE}\n Connection URL: cql://${DATABASE_SERVICE_NAME}:9042/\n\nFor more information about using this template, including OpenShift considerations, see https://github.com/sclorg/cassandra-container/blob/master/3.11/root/usr/share/container-scripts/cassandra/README.md.",
+  "labels": {
+    "template": "cassandra-ephemeral-template"
+  },
+  "objects": [
+    {
+      "kind": "Secret",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${DATABASE_SERVICE_NAME}",
+        "annotations": {
+          "template.openshift.io/expose-admin_password": "{.data['database-admin-password']}",
+          "template.openshift.io/expose-database_name": "{.data['database-name']}"
+        }
+      },
+      "stringData" : {
+        "database-admin-password" : "${CASSANDRA_ADMIN_PASSWORD}",
+        "database-name" : "${CASSANDRA_DATABASE}"
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${DATABASE_SERVICE_NAME}",
+        "annotations": {
+          "template.openshift.io/expose-uri": "cql://{.spec.clusterIP}:{.spec.ports[?(.name==\"cassandra\")].port}"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "cassandra",
+            "port": 9042
+          }
+        ],
+        "selector": {
+          "name": "${DATABASE_SERVICE_NAME}"
+        }
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${DATABASE_SERVICE_NAME}",
+        "annotations": {
+          "template.alpha.openshift.io/wait-for-ready": "true"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Recreate"
+        },
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "cassandra"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "cassandra:${CASSANDRA_VERSION}",
+                "namespace": "${NAMESPACE}"
+              }
+            }
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "name": "${DATABASE_SERVICE_NAME}"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "name": "${DATABASE_SERVICE_NAME}"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "cassandra",
+                "image": " ",
+                "ports": [
+                  {
+                    "containerPort": 9042
+                  }
+                ],
+                "readinessProbe": {
+                  "timeoutSeconds": 5,
+                  "initialDelaySeconds": 120,
+                  "exec": {
+                    "command": [ "/bin/sh", "-i", "-c",
+                      "cqlsh `hostname -I` -u admin -p $CASSANDRA_ADMIN_PASSWORD -e 'SELECT cluster_name FROM system.local; exit'"]
+                  }
+                },
+                "livenessProbe": {
+                  "timeoutSeconds": 5,
+                  "initialDelaySeconds": 160,
+                  "tcpSocket": {
+                    "port": 9042
+                  }
+                },
+                "env": [
+                  {
+                    "name": "CASSANDRA_ADMIN_PASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef" : {
+                        "name" : "${DATABASE_SERVICE_NAME}",
+                        "key" : "database-admin-password"
+                      }
+                    }
+                  },
+                  {
+                    "name": "CASSANDRA_DATABASE",
+                    "valueFrom": {
+                      "secretKeyRef" : {
+                        "name" : "${DATABASE_SERVICE_NAME}",
+                        "key" : "database-name"
+                      }
+                    }
+                  }
+                ],
+                "resources": {
+                  "limits": {
+                    "memory": "${MEMORY_LIMIT}"
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "${DATABASE_SERVICE_NAME}-data",
+                    "mountPath": "/var/opt/rh/sclo-cassandra3/lib/cassandra"
+                  }
+                ],
+                "imagePullPolicy": "IfNotPresent"
+              }
+            ],
+            "volumes": [
+              {
+                "name": "${DATABASE_SERVICE_NAME}-data",
+                "emptyDir": {
+                  "medium": ""
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "name": "MEMORY_LIMIT",
+      "displayName": "Memory Limit",
+      "description": "Maximum amount of memory the container can use.",
+      "value": "512Mi",
+      "required": true
+    },
+    {
+      "name": "NAMESPACE",
+      "displayName": "Namespace",
+      "description": "The OpenShift Namespace where the ImageStream resides.",
+      "value": "openshift"
+    },
+    {
+      "name": "DATABASE_SERVICE_NAME",
+      "displayName": "Database Service Name",
+      "description": "The name of the OpenShift Service exposed for the database.",
+      "value": "cassandra",
+      "required": true
+    },
+    {
+      "name": "CASSANDRA_ADMIN_PASSWORD",
+      "displayName": "Cassandra admin Password",
+      "description": "Password for the Cassandra admin user.",
+      "generate": "expression",
+      "from": "[a-zA-Z0-9]{16}",
+      "required": true
+    },
+    {
+      "name": "CASSANDRA_DATABASE",
+      "displayName": "Cassandra Database Name",
+      "description": "Name of the Cassandra database accessed.",
+      "value": "sampledb",
+      "required": true
+    },
+    {
+      "name": "CASSANDRA_VERSION",
+      "displayName": "Version of Cassandra Image",
+      "description": "Version of Cassandra image to be used (3.11 or latest).",
+      "value": "3.11",
+      "required": true
+    }
+  ]
+}

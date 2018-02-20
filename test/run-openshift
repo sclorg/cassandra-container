@@ -12,6 +12,9 @@ source ${THISDIR}/test-lib-openshift.sh
 
 set -exo nounset
 
+test -n "${IMAGE_NAME-}" || false 'make sure $IMAGE_NAME is defined'
+test -n "${VERSION-}" || false 'make sure $VERSION is defined'
+
 function check_cassandra_os_service_connection() {
   local util_image_name="${1}" ; shift
   local service_name="${1}" ; shift
@@ -45,14 +48,15 @@ function check_cassandra_os_service_connection() {
 }
 
 function test_cassandra_pure_image() {
-  local image_name=${1:-centos/cassandra-311-centos7}
+  local image_name=${1:-centos/cassandra-3-centos7}
   local image_name_no_namespace=${image_name##*/}
   local service_name=${image_name_no_namespace}
 
   ct_os_new_project "test-1234"
-  ct_os_upload_image "${image_name}"
+  # Create a specific imagestream tag for the image so that oc cannot use anything else
+  ct_os_upload_image "${image_name}" "$image_name_no_namespace:testing"
 
-  ct_os_deploy_pure_image "test-1234/${image_name_no_namespace}" \
+  ct_os_deploy_pure_image "test-1234/${image_name_no_namespace}:testing" \
                           --name "${service_name}" \
                           --env CASSANDRA_ADMIN_PASSWORD=r00t
 
@@ -62,6 +66,31 @@ function test_cassandra_pure_image() {
   ct_os_delete_project
 }
 
-ct_os_install_in_centos
+function test_cassandra_template() {
+  local image_name=${1:-centos/cassandra-3-centos7}
+  local image_name_no_namespace=${image_name##*/}
+  local service_name=${image_name_no_namespace}
+
+  ct_os_new_project
+  ct_os_upload_image "${image_name}" "cassandra:$VERSION"
+
+  ct_os_deploy_template_image ${THISDIR}/cassandra-ephemeral-template.json \
+                              NAMESPACE="$(oc project -q)" \
+                              MEMORY_LIMIT=2Gi \
+                              CASSANDRA_VERSION="$VERSION" \
+                              DATABASE_SERVICE_NAME="${service_name}" \
+                              CASSANDRA_ADMIN_PASSWORD=testdb
+
+  sleep 60
+  ct_os_wait_pod_ready "${service_name}" 180
+
+  check_cassandra_os_service_connection "${image_name}" "${service_name}" admin testdb
+
+  ct_os_delete_project
+}
+
 ct_os_cluster_up
 test_cassandra_pure_image ${IMAGE_NAME}
+test_cassandra_template ${IMAGE_NAME}
+#test_cassandra_s2i ${IMAGE_NAME} "https://github.com/hhorak/cassandra-container.git#s2i-support-3" test/test-app
+ct_os_cluster_down
