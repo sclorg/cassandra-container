@@ -46,6 +46,8 @@ EXPOSE 7000 7001 7199 9042
 
 ADD root /
 
+COPY ./s2i/bin/ $STI_SCRIPTS_PATH
+
 RUN INSTALL_PKGS="sclo-cassandra3 sclo-cassandra3-cassandra jemalloc" && \
     yum install -y centos-release-scl && \
     yum install -y epel-release && \
