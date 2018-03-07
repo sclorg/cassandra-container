@@ -58,8 +58,13 @@ function save_env_config_vars() {
       disk_optimization_strategy \
       endpoint_snitch \
       num_tokens \
+      rpc_server_type \
       rpc_address \
+      rpc_min_threads \
+      rpc_max_threads \
       key_cache_size_in_mb \
+      reduce_cache_sizes_at \
+      reduce_cache_capacity_to \
       concurrent_reads \
       concurrent_writes \
       memtable_allocation_type \
@@ -67,6 +72,7 @@ function save_env_config_vars() {
       memtable_flush_writers \
       concurrent_compactors \
       compaction_throughput_mb_per_sec \
+      in_memory_compaction_limit_in_mb \
       counter_cache_size_in_mb \
       internode_compression \
       gc_warn_threshold_in_ms \

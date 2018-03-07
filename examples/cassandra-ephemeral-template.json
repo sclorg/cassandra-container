@@ -211,6 +211,50 @@
       "description": "Version of Cassandra image to be used (3.11 or latest).",
       "value": "3.11",
       "required": true
+    },
+    {
+      "name": "CASSANDRA_RPC_SERVER_TYPE",
+      "required": false
+    },
+    {
+      "name": "CASSANDRA_CONCURRENT_READS",
+      "required": false
+    },
+    {
+      "name": "CASSANDRA_CONCURRENT_WRITES",
+      "required": false
+    },
+    {
+      "name": "CASSANDRA_RPC_MIN_THREADS",
+      "required": false
+    },
+    {
+      "name": "CASSANDRA_RPC_MAX_THREADS",
+      "required": false
+    },
+    {
+      "name": "CASSANDRA_CONCURRENT_COMPACTORS",
+      "required": false
+    },
+    {
+      "name": "CASSANDRA_COMPACTION_THROUGHPUT_MB_PER_SEC",
+      "required": false
+    },
+    {
+      "name": "CASSANDRA_IN_MEMORY_COMPACTION_LIMIT_IN_MB",
+      "required": false
+    },
+    {
+      "name": "CASSANDRA_KEY_CACHE_SIZE_IN_MB",
+      "required": false
+    },
+    {
+      "name": "CASSANDRA_REDUCE_CACHE_SIZES_AT",
+      "required": false
+    },
+    {
+      "name": "CASSANDRA_REDUCE_CACHE_CAPACITY_TO",
+      "required": false
     }
   ]
 }
