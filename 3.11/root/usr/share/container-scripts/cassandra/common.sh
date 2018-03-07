@@ -84,6 +84,17 @@ function save_env_config_vars() {
       fi
     done
 
+    # alter Xms, Xmx, Xmn
+    if [ -n "$CASSANDRA_MAX_HEAP_SIZE" ]; then
+      sed -ri 's/^(#)?('"-Xms"').*/\2'"$CASSANDRA_MAX_HEAP_SIZE"'/' /etc/opt/rh/sclo-cassandra3/cassandra/jvm.options
+    fi
+    if [ -n "$CASSANDRA_MAX_HEAP_SIZE" ]; then
+      sed -ri 's/^(#)?('"-Xmx"').*/\2'"$CASSANDRA_MAX_HEAP_SIZE"'/' /etc/opt/rh/sclo-cassandra3/cassandra/jvm.options
+    fi
+    if [ -n "$CASSANDRA_HEAP_NEWSIZE" ]; then
+      sed -ri 's/^(#)?('"-Xmn"').*/\2'"$CASSANDRA_HEAP_NEWSIZE"'/' /etc/opt/rh/sclo-cassandra3/cassandra/jvm.options
+    fi
+
     # hidden viariable (not originaly in config file)
     CASSANDRA_AUTO_BOOTSTRAP="${CASSANDRA_AUTO_BOOTSTRAP:-false}"
 
