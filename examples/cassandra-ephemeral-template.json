@@ -140,58 +140,6 @@
                         "key" : "database-name"
                       }
                     }
-                  },
-                  {
-                    "name": "CASSANDRA_MAX_HEAP_SIZE",
-                    "value": "${CASSANDRA_MAX_HEAP_SIZE}"
-                  },
-                  {
-                    "name": "CASSANDRA_HEAP_NEWSIZE",
-                    "value": "${CASSANDRA_HEAP_NEWSIZE}"
-                  },
-                  {
-                    "name": "CASSANDRA_RPC_SERVER_TYPE",
-                    "value": "${CASSANDRA_RPC_SERVER_TYPE}"
-                  },
-                  {
-                    "name": "CASSANDRA_CONCURRENT_READS",
-                    "value": "${CASSANDRA_CONCURRENT_READS}"
-                  },
-                  {
-                    "name": "CASSANDRA_CONCURRENT_WRITES",
-                    "value": "${CASSANDRA_CONCURRENT_WRITES}"
-                  },
-                  {
-                    "name": "CASSANDRA_RPC_MIN_THREADS",
-                    "value": "${CASSANDRA_RPC_MIN_THREADS}"
-                  },
-                  {
-                    "name": "CASSANDRA_RPC_MAX_THREADS",
-                    "value": "${CASSANDRA_RPC_MAX_THREADS}"
-                  },
-                  {
-                    "name": "CASSANDRA_CONCURRENT_COMPACTORS",
-                    "value": "${CASSANDRA_CONCURRENT_COMPACTORS}"
-                  },
-                  {
-                    "name": "CASSANDRA_COMPACTION_THROUGHPUT_MB_PER_SEC",
-                    "value": "${CASSANDRA_COMPACTION_THROUGHPUT_MB_PER_SEC}"
-                  },
-                  {
-                    "name": "CASSANDRA_IN_MEMORY_COMPACTION_LIMIT_IN_MB",
-                    "value": "${CASSANDRA_IN_MEMORY_COMPACTION_LIMIT_IN_MB}"
-                  },
-                  {
-                    "name": "CASSANDRA_KEY_CACHE_SIZE_IN_MB",
-                    "value": "${CASSANDRA_KEY_CACHE_SIZE_IN_MB}"
-                  },
-                  {
-                    "name": "CASSANDRA_REDUCE_CACHE_SIZES_AT",
-                    "value": "${CASSANDRA_REDUCE_CACHE_SIZES_AT}"
-                  },
-                  {
-                    "name": "CASSANDRA_REDUCE_CACHE_CAPACITY_TO",
-                    "value": "${CASSANDRA_REDUCE_CACHE_CAPACITY_TO}"
                   }
                 ],
                 "resources": {
@@ -263,58 +211,6 @@
       "description": "Version of Cassandra image to be used (3.11 or latest).",
       "value": "3.11",
       "required": true
-    },
-    {
-      "name": "CASSANDRA_MAX_HEAP_SIZE",
-      "required": false
-    },
-    {
-      "name": "CASSANDRA_HEAP_NEWSIZE",
-      "required": false
-    },
-    {
-      "name": "CASSANDRA_RPC_SERVER_TYPE",
-      "required": false
-    },
-    {
-      "name": "CASSANDRA_CONCURRENT_READS",
-      "required": false
-    },
-    {
-      "name": "CASSANDRA_CONCURRENT_WRITES",
-      "required": false
-    },
-    {
-      "name": "CASSANDRA_RPC_MIN_THREADS",
-      "required": false
-    },
-    {
-      "name": "CASSANDRA_RPC_MAX_THREADS",
-      "required": false
-    },
-    {
-      "name": "CASSANDRA_CONCURRENT_COMPACTORS",
-      "required": false
-    },
-    {
-      "name": "CASSANDRA_COMPACTION_THROUGHPUT_MB_PER_SEC",
-      "required": false
-    },
-    {
-      "name": "CASSANDRA_IN_MEMORY_COMPACTION_LIMIT_IN_MB",
-      "required": false
-    },
-    {
-      "name": "CASSANDRA_KEY_CACHE_SIZE_IN_MB",
-      "required": false
-    },
-    {
-      "name": "CASSANDRA_REDUCE_CACHE_SIZES_AT",
-      "required": false
-    },
-    {
-      "name": "CASSANDRA_REDUCE_CACHE_CAPACITY_TO",
-      "required": false
     }
   ]
 }
