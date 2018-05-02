@@ -10,7 +10,7 @@ save_env_config_vars
 
 if is_authorization_on; then
     echo "Authorization already enabled for this container, not setting new admin password..."
-elif test "$(ls -A "$HOME/cassandra" 2> /dev/null)"; then
+elif test "$(ls -A "$HOME/data" 2> /dev/null)"; then
     # If the container is using a not empty provided volume *and* authorization if turned off,
     # don't try to set a new CASSANDRA_ADMIN_PASSWORD, just enable authorization
     echo "Using a populated data directory, CASSANDRA_ADMIN_PASSWORD already set"
