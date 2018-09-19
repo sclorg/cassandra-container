@@ -5,7 +5,7 @@ This repository contains Dockerfiles for Apache Cassandra images for OpenShift a
 Currently only CentOS based image is available. RHEL based image will be available soon.
 
 For more information about using these images with OpenShift, please see the
-official [OpenShift Documentation](https://docs.openshift.org/latest/using_images/db_images/cassandra.html).
+official [OpenShift Documentation](https://docs.okd.io/latest/using_images/other_images/other_container_images.html).
 
 For more information about contributing, see
 [the Contribution Guidelines](https://github.com/sclorg/welcome/blob/master/contribution.md).
