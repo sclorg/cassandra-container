@@ -14,7 +14,16 @@ distribute your data across multiple machines in an application-transparent \
 matter. Cassandra will automatically re-partition as machines are \
 added/removed from the cluster. Row store means that like relational \
 databases, Cassandra organizes data by rows and columns. The Cassandra Query \
-Language (CQL) is a close relative of SQL."
+Language (CQL) is a close relative of SQL." \
+    # Set paths to avoid hard-coding them in scripts.
+    HOME=/var/opt/rh/sclo-cassandra3/lib/cassandra \
+    CASSANDRA_CONF_DIR=/etc/opt/rh/sclo-cassandra3/cassandra/ \
+    CONTAINER_SCRIPTS_BASE=/usr/share/container-scripts \
+    CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/cassandra \
+    ENABLED_COLLECTIONS="sclo-cassandra3 rh-java-common rh-maven33" \
+    BASH_ENV="\${CONTAINER_SCRIPTS_PATH}/scl_enable" \
+    ENV="\${CONTAINER_SCRIPTS_PATH}/scl_enable" \
+    PROMPT_COMMAND=". \${CONTAINER_SCRIPTS_PATH}/scl_enable"
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
@@ -22,21 +31,10 @@ LABEL summary="$SUMMARY" \
       io.k8s.display-name="Cassandra $CASSANDRA_VERSION" \
       io.openshift.expose-services="7199:cassandra,9042:cql" \
       io.openshift.tags="database,cassandra,cassandra3" \
-      name="centos/cassandra-3-centos7" \
+      name="centos/cassandra-311-centos7" \
       version="$CASSANDRA_VERSION" \
-      release="1" \
       com.redhat.component="rh-cassandra3-docker" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
-
-ENV CASSANDRA_VERSION=3.11 \
-    # Set paths to avoid hard-coding them in scripts.
-    HOME=/var/opt/rh/sclo-cassandra3/lib/cassandra \
-    CASSANDRA_CONF_DIR=/etc/opt/rh/sclo-cassandra3/cassandra/ \
-    CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/cassandra \
-    ENABLED_COLLECTIONS="sclo-cassandra3 rh-java-common rh-maven33" \
-    BASH_ENV="\${CONTAINER_SCRIPTS_PATH}/scl_enable" \
-    ENV="\${CONTAINER_SCRIPTS_PATH}/scl_enable" \
-    PROMPT_COMMAND=". \${CONTAINER_SCRIPTS_PATH}/scl_enable"
 
 # 7000: intra-node communication
 # 7001: TLS intra-node communication
@@ -44,22 +42,21 @@ ENV CASSANDRA_VERSION=3.11 \
 # 9042: CQL
 EXPOSE 7000 7001 7199 9042
 
+RUN INSTALL_PKGS="sclo-cassandra3 sclo-cassandra3-cassandra jemalloc" && \
+    yum install -y centos-release-scl epel-release && \
+    yum install --enablerepo=centos-sclo-sclo-testing -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
+    rpm -V $INSTALL_PKGS && \
+    yum clean all
+
 ADD root /
 
 COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 
-RUN INSTALL_PKGS="sclo-cassandra3 sclo-cassandra3-cassandra jemalloc" && \
-    yum install -y centos-release-scl && \
-    yum install -y epel-release && \
-    yum install --enablerepo=centos-sclo-sclo-testing -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
-    rpm -V $INSTALL_PKGS && \
-    yum clean all && \
-    chgrp -R 0 /etc/opt/rh/sclo-cassandra3/ && \
-    chmod -R g=u /etc/opt/rh/sclo-cassandra3/ && \
-    chgrp -R 0 /var/opt/rh/sclo-cassandra3/ && \
-    chmod -R g=u /var/opt/rh/sclo-cassandra3/
+RUN chown -R cassandra $HOME $CONTAINER_SCRIPTS_BASE && \
+    /usr/libexec/fix-permissions $HOME $CONTAINER_SCRIPTS_BASE $CASSANDRA_CONF_DIR /var/opt/rh/sclo-cassandra3/log/cassandra/ && \
+    rpm-file-permissions
 
-VOLUME ["/var/opt/rh/sclo-cassandra3/lib/cassandra"]
+VOLUME ["$HOME"]
 
 USER 143
 

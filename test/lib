@@ -31,6 +31,8 @@ function test_connection() {
         status=$?
         set -e
         if [ $status -eq 0 ]; then
+            sleep $sleep_time
+            cassandra_cmd "show version" || continue
             echo "  Success!"
             return 0
         fi
