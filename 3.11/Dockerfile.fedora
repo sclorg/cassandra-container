@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora:27
+FROM registry.fedoraproject.org/f29/s2i-core:latest
 
 # Cassandra image for Fedora.
 #
@@ -6,9 +6,8 @@ FROM registry.fedoraproject.org/fedora:27
 #  * /var/lib/cassandra/data - Datastore for Cassandra
 # Environment:
 
-LABEL MAINTAINER "Augusto Caringi" <acaringi@redhat.com>
-
-ENV NAME=cassandra \
+ENV CASSANDRA_VERSION=3.11 \
+    NAME=cassandra \
     VERSION=0 \
     RELEASE=2 \
     ARCH=x86_64 \
@@ -19,28 +18,25 @@ distribute your data across multiple machines in an application-transparent \
 matter. Cassandra will automatically re-partition as machines are \
 added/removed from the cluster. Row store means that like relational \
 databases, Cassandra organizes data by rows and columns. The Cassandra Query \
-Language (CQL) is a close relative of SQL."
-
-LABEL summary="$SUMMARY" \
-      description="$DESCRIPTION" \
-      com.redhat.component="$NAME" \
-      name="$FGC/$NAME" \
-      version=0 \
-      release="$RELEASE.$DISTTAG" \
-      architecture="$ARCH" \
-      usage="docker run cassandra" \
-      help="help.1"
-
-LABEL io.k8s.description="$SUMMARY" \
-      io.k8s.display-name="Cassandra 3.11" \
-      io.openshift.expose-services="7199:cassandra" \
-      io.openshift.tags="database,cassandra,cassandra39"
-
-ENV CASSANDRA_VERSION=3.11 \
+Language (CQL) is a close relative of SQL." \
     # Set paths to avoid hard-coding them in scripts.
     HOME=/var/lib/cassandra \
     CASSANDRA_CONF_DIR=/etc/cassandra/ \
+    CONTAINER_SCRIPTS_BASE=/usr/share/container-scripts \
     CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/cassandra
+
+LABEL summary="$SUMMARY" \
+      description="$DESCRIPTION" \
+      io.k8s.description="$SUMMARY" \
+      io.k8s.display-name="Cassandra $CASSANDRA_VERSION" \
+      io.openshift.expose-services="7199:cassandra,9042:cql" \
+      io.openshift.tags="database,cassandra,cassandra3" \
+      name="$FGC/$NAME" \
+      version=0 \
+      com.redhat.component="$NAME" \
+      usage="docker run cassandra" \
+      help="help.1" \
+      maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 # 7000: intra-node communication
 # 7001: TLS intra-node communication
@@ -48,14 +44,20 @@ ENV CASSANDRA_VERSION=3.11 \
 # 9042: CQL
 EXPOSE 7000 7001 7199 9042
 
-ADD root /
-
-RUN INSTALL_PKGS="cassandra-server cassandra" && \
+RUN INSTALL_PKGS="cassandra-server cassandra hostname" && \
     dnf install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     dnf clean all
 
-VOLUME ["/var/lib/cassandra"]
+ADD root /
+
+COPY ./s2i/bin/ $STI_SCRIPTS_PATH
+
+RUN chown -R cassandra $HOME $CONTAINER_SCRIPTS_BASE&& \
+    /usr/libexec/fix-permissions $HOME $CONTAINER_SCRIPTS_BASE $CASSANDRA_CONF_DIR /var/log/cassandra && \
+    rpm-file-permissions
+
+VOLUME ["$HOME"]
 
 USER 143
 
