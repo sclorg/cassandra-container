@@ -58,8 +58,13 @@ function save_env_config_vars() {
       disk_optimization_strategy \
       endpoint_snitch \
       num_tokens \
+      rpc_server_type \
       rpc_address \
+      rpc_min_threads \
+      rpc_max_threads \
       key_cache_size_in_mb \
+      reduce_cache_sizes_at \
+      reduce_cache_capacity_to \
       concurrent_reads \
       concurrent_writes \
       memtable_allocation_type \
@@ -67,6 +72,7 @@ function save_env_config_vars() {
       memtable_flush_writers \
       concurrent_compactors \
       compaction_throughput_mb_per_sec \
+      in_memory_compaction_limit_in_mb \
       counter_cache_size_in_mb \
       internode_compression \
       gc_warn_threshold_in_ms \
@@ -77,6 +83,17 @@ function save_env_config_vars() {
         sed -ri 's/^(# )?('"$yaml"':).*/\2 '"$val"'/' "$CASSANDRA_CONF_DIR$CASSANDRA_CONF_FILE"
       fi
     done
+
+    # alter Xms, Xmx, Xmn
+    if [ -n "$CASSANDRA_MAX_HEAP_SIZE" ]; then
+      sed -ri 's/^(#)?('"-Xms"').*/\2'"$CASSANDRA_MAX_HEAP_SIZE"'/' /etc/opt/rh/sclo-cassandra3/cassandra/jvm.options
+    fi
+    if [ -n "$CASSANDRA_MAX_HEAP_SIZE" ]; then
+      sed -ri 's/^(#)?('"-Xmx"').*/\2'"$CASSANDRA_MAX_HEAP_SIZE"'/' /etc/opt/rh/sclo-cassandra3/cassandra/jvm.options
+    fi
+    if [ -n "$CASSANDRA_HEAP_NEWSIZE" ]; then
+      sed -ri 's/^(#)?('"-Xmn"').*/\2'"$CASSANDRA_HEAP_NEWSIZE"'/' /etc/opt/rh/sclo-cassandra3/cassandra/jvm.options
+    fi
 
     # hidden viariable (not originaly in config file)
     CASSANDRA_AUTO_BOOTSTRAP="${CASSANDRA_AUTO_BOOTSTRAP:-false}"
