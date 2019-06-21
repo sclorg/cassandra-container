@@ -48,7 +48,10 @@ function save_env_config_vars() {
     sed -ri 's/(- seeds:).*/\1 "'"$HOSTNAME,$CASSANDRA_SEEDS"'"/' "$CASSANDRA_CONF_DIR$CASSANDRA_CONF_FILE"
 
     # alter the rpc_address to allow external CQL client connections
-    sed -ri 's/(rpc_address:).*/\1 '"$HOSTNAME"'/' "$CASSANDRA_CONF_DIR$CASSANDRA_CONF_FILE"
+    sed -ri 's/(rpc_address:).*/\1 '"0.0.0.0"'/' "$CASSANDRA_CONF_DIR$CASSANDRA_CONF_FILE"
+
+    # alter broadcast_rpc_address to hostname as recommended by Cassandra docs
+    sed -ri 's/^#? *(broadcast_rpc_address:).*/\1 '"$HOSTNAME"'/' "$CASSANDRA_CONF_DIR$CASSANDRA_CONF_FILE"
 
     # alter the listen_address to allow internode communication
     sed -ri 's/(listen_address:).*/\1 '"$HOSTNAME"'/' "$CASSANDRA_CONF_DIR$CASSANDRA_CONF_FILE"
@@ -104,7 +107,7 @@ function create_admin_user() {
 #  echo starting server
 
   # add admin super user with CASSANDRA_ADMIN_PASSWORD via the default super user
-  while ! cqlsh $HOSTNAME -u cassandra -p cassandra <<< "CREATE ROLE admin WITH PASSWORD = '$CASSANDRA_ADMIN_PASSWORD' \
+  while ! cqlsh 127.0.0.1 -u cassandra -p cassandra <<< "CREATE ROLE admin WITH PASSWORD = '$CASSANDRA_ADMIN_PASSWORD' \
     AND SUPERUSER = true \
     AND LOGIN = true;" >/dev/null 2>/dev/null; do
       sleep 1
