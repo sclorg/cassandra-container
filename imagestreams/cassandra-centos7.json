@@ -33,7 +33,7 @@
           "openshift.io/provider-display-name": "Red Hat, Inc.",
           "description": "Provides a Cassandra 3.11 database on CentOS 7. For more information about using this database image, including OpenShift considerations, see https://github.com/sclorg/cassandra-container/blob/master/3.11/root/usr/share/container-scripts/cassandra/README.md.",
           "iconClass": "icon-cassandra",
-          "tags": "hidden,cassandra",
+          "tags": "cassandra",
           "version": "3.11"
         },
         "from": {
