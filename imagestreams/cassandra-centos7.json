@@ -1,0 +1,49 @@
+{
+  "kind": "ImageStream",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "cassandra",
+    "annotations": {
+      "openshift.io/display-name": "Cassandra"
+    }
+  },
+  "spec": {
+    "tags": [
+      {
+        "name": "latest",
+        "annotations": {
+          "openshift.io/display-name": "Cassandra (Latest)",
+          "openshift.io/provider-display-name": "Red Hat, Inc.",
+          "description": "Provides a Cassandra database on CentOS 7. For more information about using this database image, including OpenShift considerations, see https://github.com/sclorg/cassandra-container/blob/master/3.11/root/usr/share/container-scripts/cassandra/README.md.\n\nWARNING: By selecting this tag, your application will automatically update to use the latest version of Cassandra available on OpenShift, including major version updates.",
+          "iconClass": "icon-cassandra",
+          "tags": "database,cassandra"
+        },
+        "from": {
+          "kind": "ImageStreamTag",
+          "name": "3.11"
+        },
+        "referencePolicy": {
+          "type": "Local"
+        }
+      },
+      {
+        "name": "3.11",
+        "annotations": {
+          "openshift.io/display-name": "Cassandra 3.11",
+          "openshift.io/provider-display-name": "Red Hat, Inc.",
+          "description": "Provides a Cassandra 3.11 database on CentOS 7. For more information about using this database image, including OpenShift considerations, see https://github.com/sclorg/cassandra-container/blob/master/3.11/root/usr/share/container-scripts/cassandra/README.md.",
+          "iconClass": "icon-cassandra",
+          "tags": "database,cassandra",
+          "version": "3.11"
+        },
+        "from": {
+          "kind": "DockerImage",
+          "name": "docker.io/centos/cassandra-311-centos7:latest"
+        },
+        "referencePolicy": {
+          "type": "Local"
+        }
+      }
+    ]
+  }
+}
